@@ -58,15 +58,24 @@ async function authRequest(endpoint) {
             body: JSON.stringify({ username, password })
         });
         const data = await res.json();
-        if (!res.ok) return authStatus.textContent = data.detail || 'Error.';
+
+        if (!res.ok) {
+            authStatus.textContent = data.detail || 'Error.';
+            return;
+        }
 
         playerId = data.username;
         authScreen.classList.add('hidden');
         mainApp.classList.remove('hidden');
-        updateDashboard(data.stats); // Pre-fill dashboard
+
+        // Safely pass the stats object, defaulting to an empty object if undefined
+        updateDashboard(data.stats || {});
         connectWS();
+
     } catch (e) {
-        authStatus.textContent = 'Server unreachable.';
+        // Stop blaming the server for JS errors! Print the actual error.
+        console.error("Login Error:", e);
+        authStatus.textContent = 'An internal error occurred. Check browser console.';
     }
 }
 
@@ -74,11 +83,17 @@ document.getElementById('login-btn').onclick = () => authRequest('login');
 document.getElementById('register-btn').onclick = () => authRequest('register');
 
 function updateDashboard(stats) {
+    // Safely default values to 0 if they don't exist yet
+    const wins = stats.wins || 0;
+    const losses = stats.losses || 0;
+    const ties = stats.ties || 0;
+    const playTime = stats.total_play_time_seconds || 0;
+
     const html = `
-        <div><strong>Total Wins:</strong> ${stats.wins}</div>
-        <div><strong>Total Losses:</strong> ${stats.losses}</div>
-        <div><strong>Ties:</strong> ${stats.ties}</div>
-        <div><strong>Playtime:</strong> ${Math.floor(stats.total_play_time_seconds / 60)} mins</div>
+        <div><strong>Total Wins:</strong> ${wins}</div>
+        <div><strong>Total Losses:</strong> ${losses}</div>
+        <div><strong>Ties:</strong> ${ties}</div>
+        <div><strong>Playtime:</strong> ${Math.floor(playTime / 60)} mins</div>
     `;
     document.getElementById('lifetime-stats').innerHTML = html;
 }
