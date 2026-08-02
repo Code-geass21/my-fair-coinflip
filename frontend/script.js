@@ -204,16 +204,17 @@ function connectWS() {
 
                 if (message.resolution_pending) {
                     if (playerId === message.loser) {
-                        resolutionMsg.textContent = "You lost! Please submit your investment bet to finish the game.";
+                        // The loser's prompt
+                        resolutionMsg.textContent = `You lost! You must now buy a stock for ${message.winner}. Enter what you sent them:`;
                         loserInputs.classList.remove('hidden');
                         gameOverPanel.classList.add('hidden');
                     } else {
-                        resolutionMsg.textContent = `Waiting for ${message.loser} to submit their stock investment...`;
+                        // The winner's prompt
+                        resolutionMsg.textContent = `You won! Waiting for ${message.loser} to pay up and gift you a stock...`;
                         loserInputs.classList.add('hidden');
                         gameOverPanel.classList.add('hidden');
                     }
                 } else {
-                    // Tie game, no resolution needed
                     resolutionMsg.textContent = "It was a tie. No investments required.";
                     gameOverPanel.classList.remove('hidden');
                 }

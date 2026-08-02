@@ -375,14 +375,15 @@ async def websocket_endpoint(websocket: WebSocket):
                         except ValueError:
                             amount = 0.0
 
-                        # Save the transaction and officially end the game
                         record_transaction(game.current_winner, game.current_loser, stock_name, amount)
                         await finish_game(winner=game.current_winner)
 
                         game.resolution_pending = False
+
+                        # 💸 Updated messaging to show the loser is paying the winner!
                         await broadcast({
                             "type": "resolution_complete",
-                            "message": f"💰 {game.current_loser} committed to investing ₹{amount} in {stock_name}!"
+                            "message": f"💸 {game.current_loser} paid ₹{amount} to {game.current_winner} for a share of {stock_name}!"
                         })
                         await broadcast_state()
 
