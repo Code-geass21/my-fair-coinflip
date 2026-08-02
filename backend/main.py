@@ -38,7 +38,8 @@ def get_db():
 
 def init_db():
     conn = get_db()
-    # 1. Users table (Added total_play_time_seconds)
+
+    # 1. Users table (Base schema)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
@@ -46,11 +47,17 @@ def init_db():
             password_hash TEXT NOT NULL,
             wins INTEGER NOT NULL DEFAULT 0,
             losses INTEGER NOT NULL DEFAULT 0,
-            ties INTEGER NOT NULL DEFAULT 0,
-            total_play_time_seconds INTEGER NOT NULL DEFAULT 0
+            ties INTEGER NOT NULL DEFAULT 0
         )
     """)
-    # 2. Transactions table (Tracks the stock investments)
+
+    # Phase 1 Upgrade: Force-add the play time column to old databases
+    try:
+        conn.execute("ALTER TABLE users ADD COLUMN total_play_time_seconds INTEGER NOT NULL DEFAULT 0")
+    except sqlite3.OperationalError:
+        pass # The column already exists, safe to ignore
+
+    # 2. Transactions table
     conn.execute("""
         CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,7 +68,8 @@ def init_db():
             timestamp_ist TEXT NOT NULL
         )
     """)
-    # 3. Sessions table (Tracks login/logout behavior)
+
+    # 3. Sessions table
     conn.execute("""
         CREATE TABLE IF NOT EXISTS sessions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

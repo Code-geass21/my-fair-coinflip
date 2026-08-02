@@ -42,7 +42,7 @@ function switchTab(tab) {
     }
 }
 
-// ---------- Auth ----------
+// ---------------Auth Request-------------------
 async function authRequest(endpoint) {
     const username = document.getElementById('auth-username').value.trim();
     const password = document.getElementById('auth-password').value;
@@ -57,25 +57,30 @@ async function authRequest(endpoint) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
         });
-        const data = await res.json();
 
+        // Gracefully handle server crashes (500 errors) so JSON.parse doesn't break
         if (!res.ok) {
-            authStatus.textContent = data.detail || 'Error.';
+            try {
+                const errorData = await res.json();
+                authStatus.textContent = errorData.detail || 'Error.';
+            } catch (err) {
+                authStatus.textContent = `Server crashed (${res.status}). Check backend logs.`;
+            }
             return;
         }
+
+        const data = await res.json();
 
         playerId = data.username;
         authScreen.classList.add('hidden');
         mainApp.classList.remove('hidden');
 
-        // Safely pass the stats object, defaulting to an empty object if undefined
         updateDashboard(data.stats || {});
         connectWS();
 
     } catch (e) {
-        // Stop blaming the server for JS errors! Print the actual error.
-        console.error("Login Error:", e);
-        authStatus.textContent = 'An internal error occurred. Check browser console.';
+        console.error("Network Error:", e);
+        authStatus.textContent = 'Network error. Could not reach server.';
     }
 }
 
