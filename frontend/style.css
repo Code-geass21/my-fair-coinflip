@@ -36,18 +36,14 @@ body {
 .container {
     background: rgba(30, 30, 30, 0.6);
     backdrop-filter: blur(12px);
-    padding: 2.5rem; /* Slightly more padding for the wider look */
+    padding: 2.5rem;
     border-radius: 16px;
     border: 1px solid var(--border-color);
     text-align: center;
-
-    /* NEW: Expanded Width for the Dashboard */
     width: 95%;
     max-width: 900px;
-
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    max-height: 85vh;
-    overflow-y: auto;
+    /* ❌ Removed max-height and overflow-y so this main box never scrolls! */
 }
 
 /* Typography */
@@ -107,7 +103,18 @@ button:active:not(:disabled) { transform: scale(0.98); }
 /* Dashboard Charts & History */
 .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
 .chart-container { background: rgba(0,0,0,0.25); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); position: relative; height: 200px; }
-.history-container { margin-top: 15px; text-align: left; background: rgba(0,0,0,0.25); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); max-height: 200px; overflow-y: auto; }
+.history-container {
+    margin-top: 15px;
+    text-align: left;
+    background: rgba(0,0,0,0.25);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+
+    /* Increased height slightly and kept the scrollbar here */
+    max-height: 250px;
+    overflow-y: auto;
+}
 .history-container h3 { margin-top: 0; color: var(--text-muted); font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
 #transaction-list { list-style: none; padding: 0; margin: 0; }
 #transaction-list li { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; display: flex; justify-content: space-between; }
