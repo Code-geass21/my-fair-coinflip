@@ -3,9 +3,6 @@
 A self-hosted, real-time multiplayer coin-flipping game designed to settle bets through financial investments rather than gambling. Built with a cryptographically secure backend, persistent data tracking, and a dynamic "glassmorphism" dashboard.
 
 ## 📸 Screenshots
-
-*(Replace these placeholder links with actual images of your game once uploaded to GitHub)*
-
 ![Game Room UI](docs/game-room-screenshot.png)
 > *The real-time synchronized Game Room featuring a 3D CSS coin animation.*
 
