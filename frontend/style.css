@@ -2,6 +2,14 @@ body { font-family: sans-serif; background: #222; color: white; display: flex; j
 .container { background: #333; padding: 2rem; border-radius: 10px; text-align: center; width: 80%; max-width: 600px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
 .hidden { display: none !important; }
 
+/* Auth screen */
+#auth-screen input { display: block; width: 90%; margin: 0 auto 10px auto; }
+#auth-buttons { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+#auth-status { margin-top: 0.75rem; color: #e88; min-height: 1.2em; }
+
+/* Lifetime stats */
+#lifetime-stats { color: #9fd3ff; font-size: 0.85rem; margin-bottom: 0.75rem; min-height: 1.1em; }
+
 /* Role banner */
 #role-banner { background: #2a3f5f; color: #9fd3ff; padding: 8px; border-radius: 5px; margin-bottom: 1rem; font-weight: bold; min-height: 1.2em; }
 

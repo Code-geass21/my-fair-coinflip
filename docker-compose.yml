@@ -6,6 +6,8 @@ services:
     image: my-fair-coinflip:latest
     networks:
       - game-net
+    volumes:
+      - coinflip-data:/app/data
     # By entirely omitting the 'ports' section here, we guarantee this 
     # container is 100% isolated from your host machine's network.
     # It cannot conflict with any existing services.
@@ -24,3 +26,7 @@ networks:
   # This creates a private network just for these two containers
   game-net:
     driver: bridge
+
+volumes:
+  # Persists the SQLite database (accounts + win/loss records) across restarts
+  coinflip-data:

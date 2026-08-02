@@ -1,19 +1,61 @@
 let ws;
-let playerId;
-let myRole = null;   // "guesser" | "flipper" | null
+let playerId = null;   // authenticated username
+let myRole = null;
 let flipCount = 0;
 
 const coin = document.getElementById('coin');
 const status = document.getElementById('status');
 const roleBanner = document.getElementById('role-banner');
+const lifetimeStatsEl = document.getElementById('lifetime-stats');
 const guessControls = document.getElementById('guess-controls');
 const flipControls = document.getElementById('flip-controls');
 const flipBtn = document.getElementById('flip-btn');
 const gameOverPanel = document.getElementById('game-over-panel');
 const gameOverTitle = document.getElementById('game-over-title');
 
+const authScreen = document.getElementById('auth-screen');
+const authUsername = document.getElementById('auth-username');
+const authPassword = document.getElementById('auth-password');
+const authStatus = document.getElementById('auth-status');
+const gameRoom = document.getElementById('game-room');
+
 const ws_protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const ws_url = `${ws_protocol}//${window.location.host}/ws`;
+
+// ---------- Auth ----------
+
+async function authRequest(endpoint) {
+    const username = authUsername.value.trim();
+    const password = authPassword.value;
+    if (!username || !password) {
+        authStatus.textContent = 'Enter a username and password.';
+        return;
+    }
+    authStatus.textContent = 'Please wait...';
+    try {
+        const res = await fetch(`/api/${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            authStatus.textContent = data.detail || 'Something went wrong.';
+            return;
+        }
+        playerId = data.username;
+        authScreen.classList.add('hidden');
+        gameRoom.classList.remove('hidden');
+        connectWS();
+    } catch (e) {
+        authStatus.textContent = 'Could not reach the server.';
+    }
+}
+
+document.getElementById('login-btn').onclick = () => authRequest('login');
+document.getElementById('register-btn').onclick = () => authRequest('register');
+
+// ---------- WebSocket / game ----------
 
 function connectWS() {
     ws = new WebSocket(ws_url);
@@ -22,7 +64,7 @@ function connectWS() {
         status.textContent = 'Connected. Joining room...';
         setTimeout(() => {
             ws.send(JSON.stringify({ type: 'join', player_id: playerId }));
-        }, 500);
+        }, 300);
     };
 
     ws.onmessage = (event) => {
@@ -39,6 +81,14 @@ function connectWS() {
                 } else if (myRole === 'flipper') {
                     roleBanner.textContent = "You're the FLIPPER — flip once your opponent locks in a guess.";
                 }
+                break;
+            }
+
+            case 'lifetime_stats': {
+                const parts = Object.entries(message.stats).map(
+                    ([name, s]) => `${name}: ${s.wins}W-${s.losses}L${s.ties ? `-${s.ties}T` : ''}`
+                );
+                lifetimeStatsEl.textContent = parts.length ? `Lifetime: ${parts.join('  |  ')}` : '';
                 break;
             }
 
@@ -142,15 +192,6 @@ function connectWS() {
     ws.onerror = (e) => console.error('WebSocket Error:', e);
     ws.onclose = () => status.textContent = 'Connection closed. Refresh page to retry.';
 }
-
-document.getElementById('join-btn').onclick = () => {
-    playerId = document.getElementById('player-id').value.trim();
-    if (!playerId) return alert('Enter your name.');
-
-    document.getElementById('game-setup').classList.add('hidden');
-    document.getElementById('game-room').classList.remove('hidden');
-    connectWS();
-};
 
 document.querySelectorAll('.guess-btn').forEach(btn => {
     btn.onclick = () => {

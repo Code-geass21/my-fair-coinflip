@@ -10,14 +10,21 @@
     <div class="container">
         <h1>Our Fair Coin Flip</h1>
 
-        <div id="game-setup">
-            <input type="text" id="player-id" placeholder="Enter your ID (e.g., Player A)">
-            <button id="join-btn">Join Game</button>
+        <div id="auth-screen">
+            <h2 id="auth-title">Log In</h2>
+            <input type="text" id="auth-username" placeholder="Username" autocomplete="username">
+            <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password">
+            <div id="auth-buttons">
+                <button id="login-btn">Log In</button>
+                <button id="register-btn">Register</button>
+            </div>
+            <div id="auth-status"></div>
         </div>
 
         <div id="game-room" class="hidden">
 
             <div id="role-banner"></div>
+            <div id="lifetime-stats"></div>
 
             <div class="score-board">
                 <div id="score-playerA">Player A: 0</div>
@@ -42,7 +49,7 @@
                 <button id="flip-btn" disabled>Flip!</button>
             </div>
 
-            <div id="status">Waiting for other player...</div>
+            <div id="status">Connecting...</div>
 
             <div id="game-over-panel" class="hidden">
                 <h2 id="game-over-title"></h2>

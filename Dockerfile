@@ -12,6 +12,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ backend/
 COPY frontend/ frontend/
 
+# Directory where the SQLite database will live (mounted as a volume)
+RUN mkdir -p /app/data
+
 # Expose our highly obscure port
 EXPOSE 54321
 
