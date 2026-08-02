@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  # Your Custom Game Application
+  game:
+    build: .
+    networks:
+      - game-net
+    # By entirely omitting the 'ports' section here, we guarantee this 
+    # container is 100% isolated from your host machine's network.
+    # It cannot conflict with any existing services.
+    restart: unless-stopped
+
+  # Cloudflare Tunnel for secure exposure
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    networks:
+      - game-net
+    # The tunnel talks to the 'game' container on our isolated internal port
+    command: tunnel --url http://game:54321
+    restart: unless-stopped
+
+networks:
+  # This creates a private network just for these two containers
+  game-net:
+    driver: bridge

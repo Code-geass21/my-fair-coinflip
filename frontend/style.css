@@ -1,0 +1,20 @@
+body { font-family: sans-serif; background: #222; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+.container { background: #333; padding: 2rem; border-radius: 10px; text-align: center; width: 80%; max-width: 600px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+.hidden { display: none !important; }
+
+/* Scoreboard */
+.score-board { display: flex; justify-content: space-between; margin-bottom: 2rem; background: #444; padding: 10px; border-radius: 5px; }
+
+/* Coin animation */
+#coin-wrapper { display: flex; justify-content: center; height: 200px; }
+#coin { position: relative; width: 100px; height: 100px; transform-style: preserve-3d; transition: transform 3s ease-out; }
+.side { position: absolute; width: 100%; height: 100%; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2rem; backface-visibility: hidden; font-weight: bold;}
+.heads { background: gold; color: #5a4a00; transform: rotateX(0deg); }
+.tails { background: silver; color: #555; transform: rotateX(180deg); }
+span { font-size: 3rem; }
+
+/* UI elements */
+input { padding: 10px; border: none; border-radius: 5px; background: #555; color: white; width: 70%; margin-right: 10px; }
+button { padding: 10px 20px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; transition: background 0.3s; }
+button:hover { background: #0056b3; }
+#status { margin-top: 1rem; color: #aaa; }

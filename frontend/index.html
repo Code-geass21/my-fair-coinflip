@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Fair Coin Flip</title>
+    <link rel="stylesheet" href="/game/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Our Fair Coin Flip</h1>
+        <div id="game-setup">
+            <input type="text" id="player-id" placeholder="Enter your ID (e.g., Player A)">
+            <button id="join-btn">Join Game</button>
+        </div>
+        
+        <div id="game-room" class="hidden">
+            <div class="score-board">
+                <div id="score-playerA">Player A: 0</div>
+                <div id="current-toss">Toss: 0/10</div>
+                <div id="score-playerB">Player B: 0</div>
+            </div>
+
+            <div id="coin-wrapper">
+                <div id="coin" class="heads">
+                    <div class="side heads"><span>H</span></div>
+                    <div class="side tails"><span>T</span></div>
+                </div>
+            </div>
+
+            <div id="controls">
+                <input type="text" id="client-seed" placeholder="Your Client Seed (Optional)">
+                <button id="flip-btn">Flip!</button>
+            </div>
+            <div id="status">Waiting for other player...</div>
+        </div>
+    </div>
+    <script src="/game/script.js"></script>
+</body>
+</html>
