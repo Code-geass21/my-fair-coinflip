@@ -9,12 +9,16 @@
 <body>
     <div class="container">
         <h1>Our Fair Coin Flip</h1>
+
         <div id="game-setup">
             <input type="text" id="player-id" placeholder="Enter your ID (e.g., Player A)">
             <button id="join-btn">Join Game</button>
         </div>
-        
+
         <div id="game-room" class="hidden">
+
+            <div id="role-banner"></div>
+
             <div class="score-board">
                 <div id="score-playerA">Player A: 0</div>
                 <div id="current-toss">Toss: 0/10</div>
@@ -28,11 +32,22 @@
                 </div>
             </div>
 
-            <div id="controls">
-                <input type="text" id="client-seed" placeholder="Your Client Seed (Optional)">
-                <button id="flip-btn">Flip!</button>
+            <div id="guess-controls" class="hidden">
+                <p>Your call — heads or tails?</p>
+                <button class="guess-btn" data-choice="heads">Heads</button>
+                <button class="guess-btn" data-choice="tails">Tails</button>
             </div>
+
+            <div id="flip-controls" class="hidden">
+                <button id="flip-btn" disabled>Flip!</button>
+            </div>
+
             <div id="status">Waiting for other player...</div>
+
+            <div id="game-over-panel" class="hidden">
+                <h2 id="game-over-title"></h2>
+                <button id="play-again-btn">Play Again</button>
+            </div>
         </div>
     </div>
     <script src="/game/script.js"></script>

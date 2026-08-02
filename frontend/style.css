@@ -2,6 +2,9 @@ body { font-family: sans-serif; background: #222; color: white; display: flex; j
 .container { background: #333; padding: 2rem; border-radius: 10px; text-align: center; width: 80%; max-width: 600px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
 .hidden { display: none !important; }
 
+/* Role banner */
+#role-banner { background: #2a3f5f; color: #9fd3ff; padding: 8px; border-radius: 5px; margin-bottom: 1rem; font-weight: bold; min-height: 1.2em; }
+
 /* Scoreboard */
 .score-board { display: flex; justify-content: space-between; margin-bottom: 2rem; background: #444; padding: 10px; border-radius: 5px; }
 
@@ -17,4 +20,21 @@ span { font-size: 3rem; }
 input { padding: 10px; border: none; border-radius: 5px; background: #555; color: white; width: 70%; margin-right: 10px; }
 button { padding: 10px 20px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; transition: background 0.3s; }
 button:hover { background: #0056b3; }
-#status { margin-top: 1rem; color: #aaa; }
+button:disabled { background: #555; cursor: not-allowed; }
+#status { margin-top: 1rem; color: #aaa; min-height: 1.2em; }
+
+/* Guess controls */
+#guess-controls { margin-top: 1rem; }
+#guess-controls p { margin-bottom: 0.5rem; color: #ddd; }
+.guess-btn { margin: 0 6px; }
+.guess-btn[data-choice="heads"] { background: #b8860b; }
+.guess-btn[data-choice="heads"]:hover { background: #9a6f09; }
+.guess-btn[data-choice="tails"] { background: #708090; }
+.guess-btn[data-choice="tails"]:hover { background: #5c6875; }
+
+/* Flip controls */
+#flip-controls { margin-top: 1rem; }
+
+/* Game over panel */
+#game-over-panel { margin-top: 1.5rem; padding: 1rem; background: #1f3a1f; border-radius: 8px; }
+#game-over-title { margin: 0 0 0.75rem 0; color: #a4e8a4; }
