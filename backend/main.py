@@ -317,8 +317,10 @@ async def websocket_endpoint(websocket: WebSocket):
             player_id = game.players[websocket]
             del game.players[websocket]
 
-            # Reset the round, but keep whichever connection(s) remain registered
-            # so the other player isn't silently orphaned mid-game.
+            # Detect if they bailed during an active match
+            dropped_mid_game = game.game_started and not game.game_over
+
+            # Reset the round state
             remaining_players = dict(game.players)
             game.scores = {}
             game.roles = {}
@@ -328,6 +330,11 @@ async def websocket_endpoint(websocket: WebSocket):
             game.game_over = False
             game.players = remaining_players
 
-            await broadcast({"type": "status", "message": f"{player_id} left the game. Waiting for a player to join..."})
+            # Send a specific popup event if they left mid-game
+            if dropped_mid_game:
+                await broadcast({"type": "opponent_dropped", "message": f"🚨 {player_id} left the game early! The match has been reset."})
+            else:
+                await broadcast({"type": "status", "message": f"{player_id} left the room. Waiting for a player to join..."})
+
             await broadcast_state()
             await broadcast_lifetime_stats()

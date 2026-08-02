@@ -184,6 +184,13 @@ function connectWS() {
                 break;
             }
 
+            case 'opponent_dropped': {
+                // This triggers the browser popup!
+                alert(message.message);
+                status.textContent = 'Waiting for another player to join...';
+                break;
+            }
+
             case 'status': {
                 status.textContent = message.message;
                 break;
