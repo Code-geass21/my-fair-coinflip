@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Your Custom Game Application
   game:
-    build: .
+    image: my-fair-coinflip:latest
     networks:
       - game-net
     # By entirely omitting the 'ports' section here, we guarantee this 

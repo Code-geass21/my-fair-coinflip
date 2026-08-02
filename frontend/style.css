@@ -6,7 +6,7 @@ body { font-family: sans-serif; background: #222; color: white; display: flex; j
 .score-board { display: flex; justify-content: space-between; margin-bottom: 2rem; background: #444; padding: 10px; border-radius: 5px; }
 
 /* Coin animation */
-#coin-wrapper { display: flex; justify-content: center; height: 200px; }
+#coin-wrapper { display: flex; justify-content: center; height: 200px; perspective: 1000px; }
 #coin { position: relative; width: 100px; height: 100px; transform-style: preserve-3d; transition: transform 3s ease-out; }
 .side { position: absolute; width: 100%; height: 100%; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2rem; backface-visibility: hidden; font-weight: bold;}
 .heads { background: gold; color: #5a4a00; transform: rotateX(0deg); }
