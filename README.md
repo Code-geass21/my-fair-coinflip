@@ -47,3 +47,27 @@ git clone https://github.com/Code-geass21/my-fair-coinflip
 cd my-fair-coinflip
 docker build -t my-fair-coinflip:latest .
 ```
+**2. Start the isolated stack:**
+
+```bash
+docker compose up -d
+
+```
+
+*(Note: The game runs internally on port `54321`. This port is NOT exposed to your host machine network to prevent conflicts.)*
+
+**3. Get your Public URL:**
+Because the game uses a temporary Cloudflare Tunnel, you need to grab the secure URL generated for your current session. Run this command to check the logs:
+
+```bash
+docker compose logs tunnel
+
+```
+
+Scroll to the bottom of the output and look for a line like this:
+`https://random-words.trycloudflare.com`
+
+**4. Play the Game:**
+Add `/game` to the end of that URL (e.g., `https://random-words.trycloudflare.com/game`) and send it to your friend!
+
+---
