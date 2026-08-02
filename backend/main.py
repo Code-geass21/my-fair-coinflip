@@ -8,6 +8,8 @@ from fastapi.staticfiles import StaticFiles
 app = FastAPI()
 app.mount("/game", StaticFiles(directory="frontend", html=True), name="frontend")
 
+print("=== my-fair-coinflip backend starting — BUILD: early-win-v1 ===", flush=True)
+
 MAX_TOSSES = 10
 WIN_THRESHOLD = (MAX_TOSSES // 2) + 1  # 6 of 10 — opponent mathematically can't catch up
 
@@ -93,6 +95,7 @@ async def handle_flip(ws):
     await asyncio.sleep(3)  # let the coin animation finish
 
     clinched = next((p for p, s in game.scores.items() if s >= WIN_THRESHOLD), None)
+    print(f"[toss {game.current_toss}] scores={game.scores} clinched={clinched}", flush=True)
 
     if clinched is not None:
         game.game_over = True
