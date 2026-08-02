@@ -1,6 +1,11 @@
 # Use a lightweight Python base image
 FROM python:3.11-slim
 
+# Install the actual Linux OS-level timezone database
+ENV TZ=Asia/Kolkata
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y tzdata && rm -rf /var/lib/apt/lists/*
+
 # Set the working directory
 WORKDIR /app
 
