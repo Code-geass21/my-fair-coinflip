@@ -36,15 +36,16 @@ body {
 .container {
     background: rgba(30, 30, 30, 0.6);
     backdrop-filter: blur(12px);
-    padding: 2rem;
+    padding: 2.5rem; /* Slightly more padding for the wider look */
     border-radius: 16px;
     border: 1px solid var(--border-color);
     text-align: center;
-    width: 100%; /* Changed from 90% for better mobile scaling */
-    max-width: 650px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 
-    /* The strict height limits */
+    /* NEW: Expanded Width for the Dashboard */
+    width: 95%;
+    max-width: 900px;
+
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     max-height: 85vh;
     overflow-y: auto;
 }
