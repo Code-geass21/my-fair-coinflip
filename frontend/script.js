@@ -191,8 +191,12 @@ function connectWS() {
 
                 setTimeout(() => {
                     const verdict = message.correct ? 'correct! 🎉' : 'wrong.';
-                    const visualResult = message.result === 'heads' ? 'Flower (❀)' : 'Person (👤)';
-                    status.textContent = `Result: ${visualResult} — ${message.guesser} guessed ${message.guess} — ${verdict}`;
+
+                    // Correctly map the visual names for the final text
+                    const visualResult = message.result === 'heads' ? 'Person (👤)' : 'Flower (❀)';
+                    const visualGuess = message.guess === 'heads' ? 'Person (👤)' : 'Flower (❀)';
+
+                    status.textContent = `Result: ${visualResult} — ${message.guesser} guessed ${visualGuess} — ${verdict}`;
                 }, 3000);
                 break;
             }
