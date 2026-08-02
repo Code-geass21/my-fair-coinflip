@@ -1,37 +1,56 @@
 let ws;
-let playerId = null;   // authenticated username
+let playerId = null;
 let myRole = null;
 let flipCount = 0;
 
+// UI Elements
 const coin = document.getElementById('coin');
 const status = document.getElementById('status');
 const roleBanner = document.getElementById('role-banner');
-const lifetimeStatsEl = document.getElementById('lifetime-stats');
 const guessControls = document.getElementById('guess-controls');
 const flipControls = document.getElementById('flip-controls');
 const flipBtn = document.getElementById('flip-btn');
-const gameOverPanel = document.getElementById('game-over-panel');
-const gameOverTitle = document.getElementById('game-over-title');
 
 const authScreen = document.getElementById('auth-screen');
-const authUsername = document.getElementById('auth-username');
-const authPassword = document.getElementById('auth-password');
-const authStatus = document.getElementById('auth-status');
-const gameRoom = document.getElementById('game-room');
+const mainApp = document.getElementById('main-app');
+const gameView = document.getElementById('game-view');
+const dashboardView = document.getElementById('dashboard-view');
+
+const resolutionPanel = document.getElementById('resolution-panel');
+const resolutionTitle = document.getElementById('resolution-title');
+const resolutionMsg = document.getElementById('resolution-msg');
+const loserInputs = document.getElementById('loser-inputs');
+const gameOverPanel = document.getElementById('game-over-panel');
 
 const ws_protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const ws_url = `${ws_protocol}//${window.location.host}/ws`;
 
-// ---------- Auth ----------
+// ---------- Tab Navigation ----------
+document.getElementById('tab-game').onclick = () => switchTab('game');
+document.getElementById('tab-dashboard').onclick = () => switchTab('dashboard');
 
-async function authRequest(endpoint) {
-    const username = authUsername.value.trim();
-    const password = authPassword.value;
-    if (!username || !password) {
-        authStatus.textContent = 'Enter a username and password.';
-        return;
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+
+    if (tab === 'game') {
+        gameView.classList.remove('hidden');
+        dashboardView.classList.add('hidden');
+    } else {
+        gameView.classList.add('hidden');
+        dashboardView.classList.remove('hidden');
     }
+}
+
+// ---------- Auth ----------
+async function authRequest(endpoint) {
+    const username = document.getElementById('auth-username').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const authStatus = document.getElementById('auth-status');
+
+    if (!username || !password) return authStatus.textContent = 'Enter username & password.';
     authStatus.textContent = 'Please wait...';
+
     try {
         const res = await fetch(`/api/${endpoint}`, {
             method: 'POST',
@@ -39,32 +58,38 @@ async function authRequest(endpoint) {
             body: JSON.stringify({ username, password })
         });
         const data = await res.json();
-        if (!res.ok) {
-            authStatus.textContent = data.detail || 'Something went wrong.';
-            return;
-        }
+        if (!res.ok) return authStatus.textContent = data.detail || 'Error.';
+
         playerId = data.username;
         authScreen.classList.add('hidden');
-        gameRoom.classList.remove('hidden');
+        mainApp.classList.remove('hidden');
+        updateDashboard(data.stats); // Pre-fill dashboard
         connectWS();
     } catch (e) {
-        authStatus.textContent = 'Could not reach the server.';
+        authStatus.textContent = 'Server unreachable.';
     }
 }
 
 document.getElementById('login-btn').onclick = () => authRequest('login');
 document.getElementById('register-btn').onclick = () => authRequest('register');
 
-// ---------- WebSocket / game ----------
+function updateDashboard(stats) {
+    const html = `
+        <div><strong>Total Wins:</strong> ${stats.wins}</div>
+        <div><strong>Total Losses:</strong> ${stats.losses}</div>
+        <div><strong>Ties:</strong> ${stats.ties}</div>
+        <div><strong>Playtime:</strong> ${Math.floor(stats.total_play_time_seconds / 60)} mins</div>
+    `;
+    document.getElementById('lifetime-stats').innerHTML = html;
+}
 
+// ---------- WebSocket Logic ----------
 function connectWS() {
     ws = new WebSocket(ws_url);
 
     ws.onopen = () => {
         status.textContent = 'Connected. Joining room...';
-        setTimeout(() => {
-            ws.send(JSON.stringify({ type: 'join', player_id: playerId }));
-        }, 300);
+        setTimeout(() => ws.send(JSON.stringify({ type: 'join', player_id: playerId })), 300);
     };
 
     ws.onmessage = (event) => {
@@ -73,83 +98,63 @@ function connectWS() {
         switch (message.type) {
             case 'roles': {
                 myRole = message.roles[playerId] || null;
+                resolutionPanel.classList.add('hidden');
                 gameOverPanel.classList.add('hidden');
                 flipCount = 0;
                 coin.style.transform = 'rotateX(0deg)';
-                if (myRole === 'guesser') {
-                    roleBanner.textContent = "You're the GUESSER — call it before each flip.";
-                } else if (myRole === 'flipper') {
-                    roleBanner.textContent = "You're the FLIPPER — flip once your opponent locks in a guess.";
-                }
+                roleBanner.textContent = myRole === 'guesser' ? "You are the GUESSER 🤔" : "You are the FLIPPER 🪙";
                 break;
             }
 
             case 'lifetime_stats': {
-                const parts = Object.entries(message.stats).map(
-                    ([name, s]) => `${name}: ${s.wins}W-${s.losses}L${s.ties ? `-${s.ties}T` : ''}`
-                );
-                lifetimeStatsEl.textContent = parts.length ? `Lifetime: ${parts.join('  |  ')}` : '';
+                if (message.stats[playerId]) updateDashboard(message.stats[playerId]);
                 break;
             }
 
             case 'state': {
                 const players = Object.keys(message.scores);
-                if (players.length > 0) {
-                    document.getElementById('score-playerA').textContent = `${players[0]}: ${message.scores[players[0]]}`;
-                }
-                if (players.length > 1) {
-                    document.getElementById('score-playerB').textContent = `${players[1]}: ${message.scores[players[1]]}`;
-                }
+                if (players.length > 0) document.getElementById('score-playerA').textContent = `${players[0]}: ${message.scores[players[0]]}`;
+                if (players.length > 1) document.getElementById('score-playerB').textContent = `${players[1]}: ${message.scores[players[1]]}`;
                 document.getElementById('current-toss').textContent = `Toss: ${message.current_toss}/${message.max_tosses}`;
 
                 if (!message.game_started) {
-                    status.textContent = 'Waiting for other player to join...';
+                    status.textContent = 'Waiting for other player...';
                     guessControls.classList.add('hidden');
                     flipControls.classList.add('hidden');
-                    gameOverPanel.classList.add('hidden');
-                    roleBanner.textContent = '';
-                    myRole = null;
-                    flipCount = 0;
-                    coin.style.transform = 'rotateX(0deg)';
-                    document.getElementById('score-playerA').textContent = 'Player A: 0';
-                    document.getElementById('score-playerB').textContent = 'Player B: 0';
                     break;
                 }
 
-                if (message.game_over) {
+                if (message.resolution_pending) {
+                    // Game is frozen waiting for loser to pay up
                     guessControls.classList.add('hidden');
                     flipControls.classList.add('hidden');
                     break;
                 }
+
+                if (message.game_over) break;
 
                 if (message.awaiting_guess) {
                     if (myRole === 'guesser') {
                         guessControls.classList.remove('hidden');
-                        flipControls.classList.add('hidden');
                         status.textContent = 'Make your call!';
                     } else {
-                        guessControls.classList.add('hidden');
-                        flipControls.classList.add('hidden');
-                        status.textContent = 'Waiting for the guesser to call it...';
+                        status.textContent = 'Waiting for guesser...';
                     }
                 } else {
                     guessControls.classList.add('hidden');
                     if (myRole === 'flipper') {
                         flipControls.classList.remove('hidden');
                         flipBtn.disabled = false;
-                        status.textContent = 'Guess is locked in — go ahead and flip!';
+                        status.textContent = 'Guess locked in. FLIP!';
                     } else {
-                        flipControls.classList.add('hidden');
-                        status.textContent = 'Guess locked in. Waiting for the flip...';
+                        status.textContent = 'Waiting for flip...';
                     }
                 }
                 break;
             }
 
             case 'guess_locked': {
-                if (myRole === 'guesser') {
-                    status.textContent = 'Guess locked in. Waiting for the flip...';
-                }
+                if (myRole === 'guesser') status.textContent = 'Guess locked. Waiting for flip...';
                 guessControls.classList.add('hidden');
                 break;
             }
@@ -160,63 +165,66 @@ function connectWS() {
                 const degrees = message.result === 'heads' ? baseSpins : baseSpins + 180;
                 coin.style.transform = `rotateX(${degrees}deg)`;
 
-                // 1. Instantly show it's spinning
                 status.textContent = 'Flipping... 🪙';
-
-                // 2. Wait EXACTLY 3 seconds for the CSS animation to finish
-                setTimeout(() => {
-                    const verdict = message.correct ? 'correct! 🎉' : 'wrong.';
-                    status.textContent =
-                        `Result: ${message.result.toUpperCase()} — ${message.guesser} guessed ${message.guess.toUpperCase()} — ${verdict}`;
-                }, 3000);
-
                 flipBtn.disabled = true;
                 flipControls.classList.add('hidden');
+
+                setTimeout(() => {
+                    const verdict = message.correct ? 'correct! 🎉' : 'wrong.';
+                    const visualResult = message.result === 'heads' ? 'Flower (❀)' : 'Person (👤)';
+                    status.textContent = `Result: ${visualResult} — ${message.guesser} guessed ${message.guess} — ${verdict}`;
+                }, 3000);
                 break;
             }
 
             case 'game_over': {
-                let winnerText = message.winner === 'tie'
-                    ? "It's a tie!"
-                    : `${message.winner} wins! 🏆`;
-                if (message.early_finish) {
-                    winnerText += ' (clinched early — opponent could no longer catch up)';
+                resolutionPanel.classList.remove('hidden');
+                resolutionTitle.textContent = `${message.winner} wins! 🏆`;
+
+                if (message.resolution_pending) {
+                    if (playerId === message.loser) {
+                        resolutionMsg.textContent = "You lost! Please submit your investment bet to finish the game.";
+                        loserInputs.classList.remove('hidden');
+                        gameOverPanel.classList.add('hidden');
+                    } else {
+                        resolutionMsg.textContent = `Waiting for ${message.loser} to submit their stock investment...`;
+                        loserInputs.classList.add('hidden');
+                        gameOverPanel.classList.add('hidden');
+                    }
+                } else {
+                    // Tie game, no resolution needed
+                    resolutionMsg.textContent = "It was a tie. No investments required.";
+                    gameOverPanel.classList.remove('hidden');
                 }
-                gameOverTitle.textContent = winnerText;
-                gameOverPanel.classList.remove('hidden');
-                guessControls.classList.add('hidden');
-                flipControls.classList.add('hidden');
-                status.textContent = 'Game over.';
                 break;
             }
 
-            case 'opponent_dropped': {
-                // This triggers the browser popup!
+            case 'resolution_complete': {
+                resolutionMsg.textContent = message.message; // Shows "X invested in Y!"
+                loserInputs.classList.add('hidden');
+                gameOverPanel.classList.remove('hidden'); // Reveal Play Again button
+                break;
+            }
+
+            case 'opponent_dropped':
                 alert(message.message);
-                status.textContent = 'Waiting for another player to join...';
+                status.textContent = 'Opponent left. Waiting...';
                 break;
-            }
 
-            case 'status': {
+            case 'status':
                 status.textContent = message.message;
                 break;
-            }
-
-            case 'error': {
+            case 'error':
                 alert(message.message);
                 break;
-            }
         }
     };
-
-    ws.onerror = (e) => console.error('WebSocket Error:', e);
-    ws.onclose = () => status.textContent = 'Connection closed. Refresh page to retry.';
 }
 
+// Game Actions
 document.querySelectorAll('.guess-btn').forEach(btn => {
     btn.onclick = () => {
-        const choice = btn.getAttribute('data-choice');
-        ws.send(JSON.stringify({ type: 'guess', choice }));
+        ws.send(JSON.stringify({ type: 'guess', choice: btn.getAttribute('data-choice') }));
         guessControls.classList.add('hidden');
     };
 });
@@ -224,29 +232,31 @@ document.querySelectorAll('.guess-btn').forEach(btn => {
 flipBtn.onclick = () => {
     ws.send(JSON.stringify({ type: 'flip' }));
     flipBtn.disabled = true;
-    status.textContent = 'Flipping...';
+};
+
+// --- NEW: Submit Investment ---
+document.getElementById('submit-investment-btn').onclick = () => {
+    const stock = document.getElementById('stock-ticker').value.trim();
+    const amount = document.getElementById('stock-amount').value.trim();
+
+    if (!stock || !amount) return alert("Please enter both a stock ticker and an amount.");
+
+    ws.send(JSON.stringify({
+        type: 'resolve_bet',
+        stock_name: stock,
+        amount: parseFloat(amount)
+    }));
+
+    document.getElementById('submit-investment-btn').disabled = true;
+    document.getElementById('submit-investment-btn').textContent = "Submitting...";
 };
 
 document.getElementById('play-again-btn').onclick = () => {
     ws.send(JSON.stringify({ type: 'play_again' }));
+    resolutionPanel.classList.add('hidden');
     gameOverPanel.classList.add('hidden');
+    document.getElementById('submit-investment-btn').disabled = false;
+    document.getElementById('submit-investment-btn').textContent = "Commit Investment";
 };
 
-document.getElementById('logout-btn').onclick = () => {
-    if (ws) {
-        ws.close();
-    }
-    playerId = null;
-    myRole = null;
-    flipCount = 0;
-    coin.style.transform = 'rotateX(0deg)';
-    authPassword.value = '';
-    authStatus.textContent = '';
-    gameOverPanel.classList.add('hidden');
-    guessControls.classList.add('hidden');
-    flipControls.classList.add('hidden');
-    lifetimeStatsEl.textContent = '';
-    roleBanner.textContent = '';
-    gameRoom.classList.add('hidden');
-    authScreen.classList.remove('hidden');
-};
+document.getElementById('logout-btn').onclick = () => location.reload();
