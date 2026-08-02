@@ -71,3 +71,16 @@ Scroll to the bottom of the output and look for a line like this:
 Add `/game` to the end of that URL (e.g., `https://random-words.trycloudflare.com/game`) and send it to your friend!
 
 ---
+## 🛠️ Tech Stack & Features
+
+* **Backend:** Python / FastAPI
+* **Real-time Sync:** WebSockets (asyncio)
+* **Database:** SQLite (Persistent Docker Volume)
+* **Security:** PBKDF2 HMAC SHA-256 Salted Password Hashing
+* **Frontend:** Vanilla HTML/CSS/JS (No frameworks)
+* **Data Visualization:** Chart.js
+* **Networking:** Cloudflare Tunnels (`cloudflared`)
+
+## 📜 License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
