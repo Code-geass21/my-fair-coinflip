@@ -3,73 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Fair Coin Flip</title>
+    <title>Fair Coin Flip & Invest</title>
     <link rel="stylesheet" href="/game/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Our Fair Coin Flip</h1>
-
         <div id="auth-screen">
-            <h2 id="auth-title">Log In</h2>
+            <h1 class="glow-text">Fair Coin Flip</h1>
+            <p class="subtitle">Settle bets with investments, not cash.</p>
             <input type="text" id="auth-username" placeholder="Username" autocomplete="username">
             <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password">
             <div id="auth-buttons">
-                <button id="login-btn">Log In</button>
-                <button id="register-btn">Register</button>
+                <button id="login-btn" class="btn-primary">Log In</button>
+                <button id="register-btn" class="btn-secondary">Register</button>
             </div>
             <div id="auth-status"></div>
         </div>
 
-        <div id="game-room" class="hidden">
+        <div id="main-app" class="hidden">
 
-            <div id="top-bar">
-                <div id="role-banner"></div>
-                <button id="logout-btn">Log Out</button>
-            </div>
-            <div id="lifetime-stats"></div>
+            <nav id="app-nav">
+                <button id="tab-game" class="tab-btn active">🎮 Game Room</button>
+                <button id="tab-dashboard" class="tab-btn">📊 Dashboard</button>
+                <button id="logout-btn" class="btn-danger">Log Out</button>
+            </nav>
 
-            <div class="score-board">
-                <div id="score-playerA">Player A: 0</div>
-                <div id="current-toss">Toss: 0/10</div>
-                <div id="score-playerB">Player B: 0</div>
-            </div>
+            <div id="game-view">
+                <div id="top-bar">
+                    <div id="role-banner"></div>
+                </div>
 
-            <div id="coin">
-                <div class="side heads">
-                    <div class="coin-rim"></div>
-                    <div class="coin-face">
-                        <div class="coin-ring"></div>
-                        <span class="coin-symbol">❀</span>
+                <div class="score-board glass-panel">
+                    <div id="score-playerA" class="score-text">Player A: 0</div>
+                    <div id="current-toss" class="toss-text">Toss: 0/10</div>
+                    <div id="score-playerB" class="score-text">Player B: 0</div>
+                </div>
+
+                <div id="coin-wrapper">
+                    <div id="coin">
+                        <div class="side heads">
+                            <div class="coin-rim"></div>
+                            <div class="coin-face">
+                                <div class="coin-ring"></div>
+                                <span class="coin-symbol">❀</span>
+                            </div>
+                        </div>
+                        <div class="side tails">
+                            <div class="coin-rim"></div>
+                            <div class="coin-face">
+                                <div class="coin-chakra"></div>
+                                <span class="coin-symbol coin-symbol-small">👤</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="side tails">
-                    <div class="coin-rim"></div>
-                    <div class="coin-face">
-                        <div class="coin-chakra"></div>
-                        <span class="coin-symbol coin-symbol-small">👤</span>
+
+                <div id="controls-container">
+                    <div id="guess-controls" class="hidden">
+                        <p>Your call — flower or person?</p>
+                        <button class="guess-btn btn-primary" data-choice="heads">Flower (❀)</button>
+                        <button class="guess-btn btn-secondary" data-choice="tails">Person (👤)</button>
                     </div>
+
+                    <div id="flip-controls" class="hidden">
+                        <button id="flip-btn" class="btn-action" disabled>Flip Coin!</button>
+                    </div>
+                </div>
+
+                <div id="status" class="status-text">Connecting...</div>
+
+                <div id="resolution-panel" class="glass-panel hidden">
+                    <h2 id="resolution-title">Game Over!</h2>
+                    <p id="resolution-msg"></p>
+
+                    <div id="loser-inputs" class="hidden">
+                        <p class="warning-text">You lost! Time to pay up by investing.</p>
+                        <input type="text" id="stock-ticker" placeholder="Enter Stock Ticker (e.g., RELIANCE)">
+                        <input type="number" id="stock-amount" placeholder="Amount (₹)">
+                        <button id="submit-investment-btn" class="btn-action">Commit Investment</button>
+                    </div>
+                </div>
+
+                <div id="game-over-panel" class="hidden">
+                    <button id="play-again-btn" class="btn-primary">Play Again</button>
                 </div>
             </div>
 
-            <div id="guess-controls" class="hidden">
-                <p>Your call — heads or tails?</p>
-                <button class="guess-btn" data-choice="heads">Heads</button>
-                <button class="guess-btn" data-choice="tails">Tails</button>
+            <div id="dashboard-view" class="hidden glass-panel">
+                <h2>Your Investment Journey</h2>
+                <div id="lifetime-stats" class="stats-grid">
+                    </div>
+                <div class="placeholder-chart">
+                    <p>Charts & Transaction History coming in Phase 3!</p>
+                </div>
             </div>
 
-            <div id="flip-controls" class="hidden">
-                <button id="flip-btn" disabled>Flip!</button>
-            </div>
-
-            <div id="status">Connecting...</div>
-
-            <div id="game-over-panel" class="hidden">
-                <h2 id="game-over-title"></h2>
-                <button id="play-again-btn">Play Again</button>
-            </div>
         </div>
     </div>
-    <script src="/game/script.js?v=2"></script>
+    <script src="/game/script.js?v=4"></script>
 </body>
 </html>
