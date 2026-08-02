@@ -43,7 +43,7 @@ This application is fully containerized and uses Cloudflare Quick Tunnels to sec
 
 **1. Clone the repository and build the container:**
 ```bash
-git clone [https://github.com/Code-geass21/my-fair-coinflip]
+git clone https://github.com/Code-geass21/my-fair-coinflip
 cd my-fair-coinflip
 docker build -t my-fair-coinflip:latest .
 ```
