@@ -23,11 +23,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Changed to min-height so it doesn't strictly lock the screen */
     min-height: 100vh;
     margin: 0;
-    /* Added padding so it never touches the absolute edge of your monitor */
     padding: 20px;
+    /* NEW: Completely disable the browser's main scrollbar! */
+    overflow: hidden;
 }
 
 .hidden { display: none !important; }
@@ -43,7 +43,19 @@ body {
     width: 95%;
     max-width: 900px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    /* ❌ Removed max-height and overflow-y so this main box never scrolls! */
+
+    /* NEW: Flexbox setup to shrink the box to fit the screen */
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* NEW: Allow the Dashboard to dynamically resize */
+#dashboard-view:not(.hidden) {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0; /* Critical so the history list knows when to scroll */
 }
 
 /* Typography */
@@ -102,7 +114,16 @@ button:active:not(:disabled) { transform: scale(0.98); }
 .tails .coin-symbol { color: #444; text-shadow: 0 1px 0 rgba(255,255,255,0.6), 0 -1px 0 rgba(0,0,0,0.3); }
 /* Dashboard Charts & History */
 .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-.chart-container { background: rgba(0,0,0,0.25); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); position: relative; height: 200px; }
+.chart-container {
+    background: rgba(0,0,0,0.25);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    position: relative;
+    /* Shrink the charts slightly so they don't hog the screen */
+    height: 180px;
+}
+
 .history-container {
     margin-top: 15px;
     text-align: left;
@@ -111,8 +132,8 @@ button:active:not(:disabled) { transform: scale(0.98); }
     border-radius: 10px;
     border: 1px solid var(--border-color);
 
-    /* Increased height slightly and kept the scrollbar here */
-    max-height: 250px;
+    /* NEW: Dynamically fill space and enable the ONLY scrollbar */
+    flex-grow: 1;
     overflow-y: auto;
 }
 .history-container h3 { margin-top: 0; color: var(--text-muted); font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
