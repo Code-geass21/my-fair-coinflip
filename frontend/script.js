@@ -113,9 +113,12 @@ function connectWS() {
             }
 
             case 'game_over': {
-                const winnerText = message.winner === 'tie'
+                let winnerText = message.winner === 'tie'
                     ? "It's a tie!"
                     : `${message.winner} wins! 🏆`;
+                if (message.early_finish) {
+                    winnerText += ' (clinched early — opponent could no longer catch up)';
+                }
                 gameOverTitle.textContent = winnerText;
                 gameOverPanel.classList.remove('hidden');
                 guessControls.classList.add('hidden');

@@ -9,6 +9,7 @@ app = FastAPI()
 app.mount("/game", StaticFiles(directory="frontend", html=True), name="frontend")
 
 MAX_TOSSES = 10
+WIN_THRESHOLD = (MAX_TOSSES // 2) + 1  # 6 of 10 — opponent mathematically can't catch up
 
 
 class GameState:
@@ -91,12 +92,27 @@ async def handle_flip(ws):
 
     await asyncio.sleep(3)  # let the coin animation finish
 
-    if game.current_toss >= MAX_TOSSES:
+    clinched = next((p for p, s in game.scores.items() if s >= WIN_THRESHOLD), None)
+
+    if clinched is not None:
+        game.game_over = True
+        await broadcast({
+            "type": "game_over",
+            "scores": game.scores,
+            "winner": clinched,
+            "early_finish": game.current_toss < MAX_TOSSES,
+        })
+    elif game.current_toss >= MAX_TOSSES:
         game.game_over = True
         top_score = max(game.scores.values())
         winners = [p for p, s in game.scores.items() if s == top_score]
         winner = winners[0] if len(winners) == 1 else "tie"
-        await broadcast({"type": "game_over", "scores": game.scores, "winner": winner})
+        await broadcast({
+            "type": "game_over",
+            "scores": game.scores,
+            "winner": winner,
+            "early_finish": False,
+        })
 
     await broadcast_state()
 
