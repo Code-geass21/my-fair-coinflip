@@ -159,3 +159,19 @@ button:active:not(:disabled) { transform: scale(0.98); }
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-hover);
 }
+
+/* NEW: Make the main app wrapper flex-aware so it passes height down */
+#main-app:not(.hidden) {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+/* NEW: Give the Game Room its own scrollbar ONLY when it gets too tall */
+#game-view:not(.hidden) {
+    flex-grow: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding-right: 5px; /* Keeps the scrollbar from overlapping your text */
+}
