@@ -106,6 +106,13 @@ function connectWS() {
                     status.textContent = 'Waiting for other player to join...';
                     guessControls.classList.add('hidden');
                     flipControls.classList.add('hidden');
+                    gameOverPanel.classList.add('hidden');
+                    roleBanner.textContent = '';
+                    myRole = null;
+                    flipCount = 0;
+                    coin.style.transform = 'rotateX(0deg)';
+                    document.getElementById('score-playerA').textContent = 'Player A: 0';
+                    document.getElementById('score-playerB').textContent = 'Player B: 0';
                     break;
                 }
 
@@ -210,4 +217,23 @@ flipBtn.onclick = () => {
 document.getElementById('play-again-btn').onclick = () => {
     ws.send(JSON.stringify({ type: 'play_again' }));
     gameOverPanel.classList.add('hidden');
+};
+
+document.getElementById('logout-btn').onclick = () => {
+    if (ws) {
+        ws.close();
+    }
+    playerId = null;
+    myRole = null;
+    flipCount = 0;
+    coin.style.transform = 'rotateX(0deg)';
+    authPassword.value = '';
+    authStatus.textContent = '';
+    gameOverPanel.classList.add('hidden');
+    guessControls.classList.add('hidden');
+    flipControls.classList.add('hidden');
+    lifetimeStatsEl.textContent = '';
+    roleBanner.textContent = '';
+    gameRoom.classList.add('hidden');
+    authScreen.classList.remove('hidden');
 };

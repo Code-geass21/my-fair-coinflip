@@ -23,7 +23,10 @@
 
         <div id="game-room" class="hidden">
 
-            <div id="role-banner"></div>
+            <div id="top-bar">
+                <div id="role-banner"></div>
+                <button id="logout-btn">Log Out</button>
+            </div>
             <div id="lifetime-stats"></div>
 
             <div class="score-board">
@@ -33,9 +36,21 @@
             </div>
 
             <div id="coin-wrapper">
-                <div id="coin" class="heads">
-                    <div class="side heads"><span>H</span></div>
-                    <div class="side tails"><span>T</span></div>
+                <div id="coin">
+                    <div class="side heads">
+                        <div class="coin-rim"></div>
+                        <div class="coin-face">
+                            <div class="coin-ring"></div>
+                            <span class="coin-symbol">₹</span>
+                        </div>
+                    </div>
+                    <div class="side tails">
+                        <div class="coin-rim"></div>
+                        <div class="coin-face">
+                            <div class="coin-chakra"></div>
+                            <span class="coin-symbol coin-symbol-small">1</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 

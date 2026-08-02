@@ -316,6 +316,18 @@ async def websocket_endpoint(websocket: WebSocket):
         if websocket in game.players:
             player_id = game.players[websocket]
             del game.players[websocket]
-            game.__init__()
-            await broadcast({"type": "status", "message": f"{player_id} disconnected. Game reset — waiting for players."})
+
+            # Reset the round, but keep whichever connection(s) remain registered
+            # so the other player isn't silently orphaned mid-game.
+            remaining_players = dict(game.players)
+            game.scores = {}
+            game.roles = {}
+            game.current_toss = 0
+            game.pending_guess = None
+            game.game_started = False
+            game.game_over = False
+            game.players = remaining_players
+
+            await broadcast({"type": "status", "message": f"{player_id} left the game. Waiting for a player to join..."})
             await broadcast_state()
+            await broadcast_lifetime_stats()
