@@ -2,8 +2,8 @@ let ws;
 let playerId;
 const coin = document.getElementById('coin');
 const status = document.getElementById('status');
+let flipCount = 0; // Tracks cumulative spins
 
-// Web Socket setup 
 const ws_protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const ws_url = `${ws_protocol}//${window.location.host}/ws`;
 
@@ -12,7 +12,6 @@ function connectWS() {
 
     ws.onopen = () => {
         status.textContent = 'Connected. Joining room...';
-        // Send join event
         setTimeout(() => {
             ws.send(JSON.stringify({ type: 'join', player_id: playerId }));
         }, 500);
@@ -22,7 +21,6 @@ function connectWS() {
         const message = JSON.parse(event.data);
         
         if (message.type === 'state') {
-            // Dynamically apply real names to the scoreboard
             const players = Object.keys(message.scores);
             if (players.length > 0) {
                 document.getElementById('score-playerA').textContent = `${players[0]}: ${message.scores[players[0]]}`;
@@ -33,14 +31,16 @@ function connectWS() {
             document.getElementById('current-toss').textContent = `Toss: ${message.current_toss}/10`;
             
         } else if (message.type === 'flip_result') {
-            const degrees = message.result === 'heads' ? 3600 : 3780; // Animation math
+            // Force the coin to keep spinning forward by adding rotations cumulatively
+            flipCount++;
+            const baseSpins = flipCount * 3600; // 10 spins forward per flip
+            const degrees = message.result === 'heads' ? baseSpins : baseSpins + 180; 
+            
             coin.style.transform = `rotateX(${degrees}deg)`;
             status.textContent = `${message.player} flipped! Result: ${message.result.toUpperCase()}`;
             
         } else if (message.type === 'status') {
-            // Display when a player joins or leaves
             status.textContent = message.message;
-            
         } else if (message.type === 'error') {
             alert(message.message);
         }
@@ -50,7 +50,6 @@ function connectWS() {
     ws.onclose = () => status.textContent = 'Connection closed. Refresh page to retry.';
 }
 
-// UI Controls
 document.getElementById('join-btn').onclick = () => {
     playerId = document.getElementById('player-id').value;
     if (!playerId) return alert('Enter your name.');
@@ -63,6 +62,5 @@ document.getElementById('join-btn').onclick = () => {
 document.getElementById('flip-btn').onclick = () => {
     const seed = document.getElementById('client-seed').value || 'my_seed';
     ws.send(JSON.stringify({ type: 'flip', client_seed: seed }));
-    coin.style.transform = `rotateX(0deg)`; // Reset rotation before flipping
     status.textContent = 'Flipping...';
 };
