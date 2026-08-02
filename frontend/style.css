@@ -11,7 +11,25 @@
     --danger: #dc3545;
 }
 
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+/* NEW: Force browser to include padding in height calculations */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Changed to min-height so it doesn't strictly lock the screen */
+    min-height: 100vh;
+    margin: 0;
+    /* Added padding so it never touches the absolute edge of your monitor */
+    padding: 20px;
+}
+
 .hidden { display: none !important; }
 
 /* Main Container & Glassmorphism */
@@ -22,12 +40,12 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
     border-radius: 16px;
     border: 1px solid var(--border-color);
     text-align: center;
-    width: 90%;
+    width: 100%; /* Changed from 90% for better mobile scaling */
     max-width: 650px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 
-    /* NEW: Prevent overflowing the screen */
-    max-height: 90vh;
+    /* The strict height limits */
+    max-height: 85vh;
     overflow-y: auto;
 }
 
