@@ -192,11 +192,8 @@ function connectWS() {
                 setTimeout(() => {
                     const verdict = message.correct ? 'correct! 🎉' : 'wrong.';
 
-                    // Correctly map the visual names for the final text
-                    const visualResult = message.result === 'heads' ? 'Person (👤)' : 'Flower (❀)';
-                    const visualGuess = message.guess === 'heads' ? 'Person (👤)' : 'Flower (❀)';
-
-                    status.textContent = `Result: ${visualResult} — ${message.guesser} guessed ${visualGuess} — ${verdict}`;
+                    // Reverted back to standard Heads and Tails text
+                    status.textContent = `Result: ${message.result.toUpperCase()} — ${message.guesser} guessed ${message.guess.toUpperCase()} — ${verdict}`;
                 }, 3000);
                 break;
             }
