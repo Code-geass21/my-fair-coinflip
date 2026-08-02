@@ -39,6 +39,8 @@ function switchTab(tab) {
     } else {
         gameView.classList.add('hidden');
         dashboardView.classList.remove('hidden');
+        // NEW: Load chart data when the tab is opened
+        loadDashboardData();
     }
 }
 
@@ -282,3 +284,96 @@ document.getElementById('play-again-btn').onclick = () => {
 };
 
 document.getElementById('logout-btn').onclick = () => location.reload();
+
+// ---------- Dashboard Charts & Data ----------
+let winLossChartInstance = null;
+let investmentChartInstance = null;
+
+Chart.defaults.color = '#a0a0a0'; // Match dark theme text
+
+async function loadDashboardData() {
+    try {
+        const res = await fetch(`/api/transactions/${playerId}`);
+        const transactions = await res.json();
+
+        renderTransactionHistory(transactions);
+        renderCharts(transactions);
+    } catch (e) {
+        console.error("Failed to load dashboard data", e);
+    }
+}
+
+function renderTransactionHistory(transactions) {
+    const list = document.getElementById('transaction-list');
+    list.innerHTML = '';
+
+    if (transactions.length === 0) {
+        list.innerHTML = '<li>No investments yet. Go win some bets!</li>';
+        return;
+    }
+
+    transactions.forEach(t => {
+        const isWinner = t.winner === playerId;
+        const li = document.createElement('li');
+
+        const statusText = isWinner
+            ? `<span class="win-text">+₹${t.amount} (${t.stock_name})</span>`
+            : `<span class="lose-text">-₹${t.amount} (${t.stock_name})</span>`;
+
+        const contextText = isWinner ? `from ${t.loser}` : `to ${t.winner}`;
+
+        li.innerHTML = `<span>${statusText} ${contextText}</span> <span style="color:#666; font-size:0.8rem;">${t.timestamp_ist.split(' ')[0]}</span>`;
+        list.appendChild(li);
+    });
+}
+
+function renderCharts(transactions) {
+    let moneyWon = 0;
+    let moneyLost = 0;
+
+    transactions.forEach(t => {
+        if (t.winner === playerId) moneyWon += t.amount;
+        if (t.loser === playerId) moneyLost += t.amount;
+    });
+
+    // 1. Destroy old charts if they exist (prevents hover glitches)
+    if (winLossChartInstance) winLossChartInstance.destroy();
+    if (investmentChartInstance) investmentChartInstance.destroy();
+
+    // 2. Win/Loss Ratio Chart (Read from the DOM stats we already have)
+    const rawWins = document.body.innerHTML.match(/Total Wins:<\/strong>\s*(\d+)/);
+    const rawLosses = document.body.innerHTML.match(/Total Losses:<\/strong>\s*(\d+)/);
+    const wins = rawWins ? parseInt(rawWins[1]) : 0;
+    const losses = rawLosses ? parseInt(rawLosses[1]) : 0;
+
+    const ctx1 = document.getElementById('winLossChart').getContext('2d');
+    winLossChartInstance = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+            labels: ['Wins', 'Losses'],
+            datasets: [{
+                data: [wins, losses],
+                backgroundColor: ['#28a745', '#dc3545'],
+                borderWidth: 0
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // 3. Investment Cashflow Chart
+    const ctx2 = document.getElementById('investmentChart').getContext('2d');
+    investmentChartInstance = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Value Won', 'Value Lost'],
+            datasets: [{
+                label: 'Rupees (₹)',
+                data: [moneyWon, moneyLost],
+                backgroundColor: ['rgba(40, 167, 69, 0.6)', 'rgba(220, 53, 69, 0.6)'],
+                borderColor: ['#28a745', '#dc3545'],
+                borderWidth: 1
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+}

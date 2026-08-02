@@ -187,6 +187,19 @@ async def login(req: AuthRequest):
         return _error(401, "Invalid username or password.")
     return {"username": username, "stats": get_user_stats(username)}
 
+@app.get("/api/transactions/{username}")
+async def get_transactions(username: str):
+    conn = get_db()
+    # Fetch all transactions where the user was either the winner or the loser
+    rows = conn.execute(
+        "SELECT * FROM transactions WHERE winner = ? OR loser = ? ORDER BY id DESC",
+        (username, username)
+    ).fetchall()
+    conn.close()
+
+    # Convert SQLite rows to a list of dictionaries for JSON
+    return [dict(row) for row in rows]
+
 def _error(status_code: int, detail: str):
     from fastapi.responses import JSONResponse
     return JSONResponse(status_code=status_code, content={"detail": detail})

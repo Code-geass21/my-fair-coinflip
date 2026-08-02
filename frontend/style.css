@@ -72,3 +72,14 @@ button:active:not(:disabled) { transform: scale(0.98); }
 .coin-chakra { position: absolute; inset: 10px; border-radius: 50%; border: 2px solid rgba(70, 70, 70, 0.5); background: repeating-conic-gradient(rgba(70,70,70,0.35) 0deg 7.5deg, transparent 7.5deg 15deg); mask: radial-gradient(circle, transparent 55%, black 56%, black 100%); -webkit-mask: radial-gradient(circle, transparent 55%, black 56%, black 100%);}
 .coin-symbol { position: relative; font-size: 2.4rem; font-weight: bold; color: #5a4200; text-shadow: 0 1px 0 rgba(255,255,255,0.5), 0 -1px 0 rgba(0,0,0,0.4); }
 .tails .coin-symbol { color: #444; text-shadow: 0 1px 0 rgba(255,255,255,0.6), 0 -1px 0 rgba(0,0,0,0.3); }
+/* Dashboard Charts & History */
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+.chart-container { background: rgba(0,0,0,0.25); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); position: relative; height: 200px; }
+.history-container { margin-top: 15px; text-align: left; background: rgba(0,0,0,0.25); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); max-height: 200px; overflow-y: auto; }
+.history-container h3 { margin-top: 0; color: var(--text-muted); font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+#transaction-list { list-style: none; padding: 0; margin: 0; }
+#transaction-list li { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; display: flex; justify-content: space-between; }
+#transaction-list li:last-child { border-bottom: none; }
+.win-text { color: var(--accent-green); font-weight: bold; }
+.lose-text { color: var(--danger); font-weight: bold; }
+@media (max-width: 600px) { .charts-grid { grid-template-columns: 1fr; } }

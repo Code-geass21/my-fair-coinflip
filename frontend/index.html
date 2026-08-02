@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fair Coin Flip & Invest</title>
     <link rel="stylesheet" href="/game/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -93,13 +94,24 @@
                 <h2>Your Investment Journey</h2>
                 <div id="lifetime-stats" class="stats-grid">
                     </div>
-                <div class="placeholder-chart">
-                    <p>Charts & Transaction History coming in Phase 3!</p>
+
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <canvas id="winLossChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="investmentChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="history-container">
+                    <h3>Recent Transfers</h3>
+                    <ul id="transaction-list"></ul>
                 </div>
             </div>
 
         </div>
     </div>
-    <script src="/game/script.js?v=6"></script>
+    <script src="/game/script.js?v=10"></script>
 </body>
 </html>
