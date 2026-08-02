@@ -160,9 +160,15 @@ function connectWS() {
                 const degrees = message.result === 'heads' ? baseSpins : baseSpins + 180;
                 coin.style.transform = `rotateX(${degrees}deg)`;
 
-                const verdict = message.correct ? 'correct! 🎉' : 'wrong.';
-                status.textContent =
-                    `Result: ${message.result.toUpperCase()} — ${message.guesser} guessed ${message.guess.toUpperCase()} — ${verdict}`;
+                // 1. Instantly show it's spinning
+                status.textContent = 'Flipping... 🪙';
+
+                // 2. Wait EXACTLY 3 seconds for the CSS animation to finish
+                setTimeout(() => {
+                    const verdict = message.correct ? 'correct! 🎉' : 'wrong.';
+                    status.textContent =
+                        `Result: ${message.result.toUpperCase()} — ${message.guesser} guessed ${message.guess.toUpperCase()} — ${verdict}`;
+                }, 3000);
 
                 flipBtn.disabled = true;
                 flipControls.classList.add('hidden');

@@ -237,7 +237,8 @@ async def handle_flip(ws):
         "toss": game.current_toss,
     })
 
-    await asyncio.sleep(3)
+    # Changed from 3 to 5! (3s for animation + 2s to read the result)
+    await asyncio.sleep(5)
 
     clinched = next((p for p, s in game.scores.items() if s >= WIN_THRESHOLD), None)
     print(f"[toss {game.current_toss}] scores={game.scores} clinched={clinched}", flush=True)
